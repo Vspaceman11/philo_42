@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 17:02:46 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/09 17:55:10 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/09 18:05:00 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ typedef struct s_philo
 
 // init.c
 int	init_params(t_params *params, int argc, char **argv);
+int	init_forks(t_params *params);
 
 // utils.c
 int	ft_atol_pos(const char *str, int *out);

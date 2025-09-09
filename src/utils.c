@@ -6,11 +6,25 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 17:22:29 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/09 17:32:54 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/09 17:54:51 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
+
+#include <stdio.h>
+
+/**
+ * @brief Prints an error message to stderr.
+ *
+ * @param msg The error message to display.
+ * @return Always returns 1 (convention for error in init functions).
+ */
+int	print_error(const char *msg)
+{
+	printf("Error: %s\n", msg);
+	return (1);
+}
 
 /**
  * @brief Convert string to positive long.

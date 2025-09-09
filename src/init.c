@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 17:30:36 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/09 17:54:58 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/09 18:03:33 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,5 +34,29 @@ int	init_params(t_params *params, int argc, char **argv)
 	}
 	params->stop = 0;
 	gettimeofday(&params->start_time, NULL);
+	return (0);
+}
+
+/**
+ * @brief Initialize forks (mutexes) for philosophers.
+ *
+ * @param params Pointer to simulation parameters.
+ * @return 0 on success, 1 on error.
+ */
+int	init_forks(t_params *params)
+{
+	int	i;
+
+	params->forks = malloc(sizeof(pthread_mutex_t) * params->n);
+	if (!params->forks)
+		return (print_error("Malloc failed for forks"));
+
+	i = 0;
+	while (i < params->n)
+	{
+		if (pthread_mutex_init(&params->forks[i], NULL) != 0)
+			return (print_error("Mutex init failed for fork"));
+		i++;
+	}
 	return (0);
 }

@@ -6,11 +6,41 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 13:51:41 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/10 14:25:54 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/10 14:50:52 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
+
+void	philo_eat(t_philo *philo)
+{
+	t_params	*params;
+
+	params = philo->params;
+	pthread_mutex_lock(&params->forks[philo->philo_id]);
+	pthread_mutex_lock(&params->forks[(philo->philo_id + 1) % params->n]);
+	print_state(philo, "has taken a fork");
+	print_state(philo, "has taken a fork");
+	pthread_mutex_lock(&philo->meal_mutex);
+	philo->last_meal_ms = get_timestamp_ms(params);
+	philo->eat_count++;
+	pthread_mutex_unlock(&philo->meal_mutex);
+	print_state(philo, "is eating");
+	usleep(params->time_to_eat * 1000);
+	pthread_mutex_unlock(&params->forks[philo->philo_id]);
+	pthread_mutex_unlock(&params->forks[(philo->philo_id + 1) % params->n]);
+}
+
+void	philo_sleep(t_philo *philo)
+{
+	print_state(philo, "is sleeping");
+	usleep(philo->params->time_to_sleep * 1000);
+}
+
+void	philo_think(t_philo *philo)
+{
+	print_state(philo, "is thinking");
+}
 
 /**
  * @brief Thread routine for each philosopher.
@@ -18,12 +48,20 @@
  * @param arg Pointer to t_philo struct.
  * @return NULL
  */
-static void	*philo_routine(void *arg)
+void	*philo_routine(void *arg)
 {
-	t_philo	*philo;
+	t_philo		*philo;
+	t_params	*params;
 
 	philo = (t_philo *)arg;
-	printf("Philosopher %d started\n", philo->philo_id);
+	params = philo->params;
+
+	while (!params->stop)
+	{
+		philo_eat(philo);
+		philo_sleep(philo);
+		philo_think(philo);
+	}
 	return (NULL);
 }
 

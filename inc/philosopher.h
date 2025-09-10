@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 17:02:46 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/10 13:40:17 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/10 14:18:18 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,11 @@
 
 typedef struct s_params
 {
-	int				n;
+	long			n;
 	long			time_to_die;
 	long			time_to_eat;
 	long			time_to_sleep;
-	int				must_eat_count;
+	long			must_eat_count;
 	struct timeval	start_time;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_mutex;
@@ -49,8 +49,10 @@ int	init_mutexes(t_params *params);
 int	init_philo(t_philo **philos, t_params *params);
 
 // utils.c
-int	ft_atol_pos(const char *str, int *out);
+int	ft_atol_positive(const char *str, long *out);
 int	print_error(const char *msg);
 
+// philo_simulation.c
+int	start_simulation(t_philo *philos, t_params *params);
 
 #endif

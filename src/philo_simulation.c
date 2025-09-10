@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 13:51:41 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/10 14:50:52 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/10 15:54:41 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,21 +14,25 @@
 
 void	philo_eat(t_philo *philo)
 {
-	t_params	*params;
+	t_params *params = philo->params;
+	int first_fork = philo->philo_id;
+	int second_fork = (philo->philo_id + 1) % params->n;
 
-	params = philo->params;
-	pthread_mutex_lock(&params->forks[philo->philo_id]);
-	pthread_mutex_lock(&params->forks[(philo->philo_id + 1) % params->n]);
+	pthread_mutex_lock(&params->forks[first_fork]);
 	print_state(philo, "has taken a fork");
+	pthread_mutex_lock(&params->forks[second_fork]);
 	print_state(philo, "has taken a fork");
+
 	pthread_mutex_lock(&philo->meal_mutex);
-	philo->last_meal_ms = get_timestamp_ms(params);
+	print_state(philo, "is eating");
+	philo->last_meal_time = get_timestamp_ms(params);
 	philo->eat_count++;
 	pthread_mutex_unlock(&philo->meal_mutex);
-	print_state(philo, "is eating");
+
 	usleep(params->time_to_eat * 1000);
-	pthread_mutex_unlock(&params->forks[philo->philo_id]);
-	pthread_mutex_unlock(&params->forks[(philo->philo_id + 1) % params->n]);
+
+	pthread_mutex_unlock(&params->forks[second_fork]);
+	pthread_mutex_unlock(&params->forks[first_fork]);
 }
 
 void	philo_sleep(t_philo *philo)
@@ -50,16 +54,39 @@ void	philo_think(t_philo *philo)
  */
 void	*philo_routine(void *arg)
 {
-	t_philo		*philo;
-	t_params	*params;
+	t_philo *philo;
+	t_params *params;
 
 	philo = (t_philo *)arg;
 	params = philo->params;
-
-	while (!params->stop)
+	// Add delay for even numbered philosophers to prevent deadlock
+	if (philo->philo_id % 2 == 0)
+		usleep(1000);
+	while (1)
 	{
+		pthread_mutex_lock(&params->stop_mutex);
+		if (params->stop)
+		{
+			pthread_mutex_unlock(&params->stop_mutex);
+			break ;
+		}
+		pthread_mutex_unlock(&params->stop_mutex);
 		philo_eat(philo);
+		pthread_mutex_lock(&params->stop_mutex);
+		if (params->stop)
+		{
+			pthread_mutex_unlock(&params->stop_mutex);
+			break ;
+		}
+		pthread_mutex_unlock(&params->stop_mutex);
 		philo_sleep(philo);
+		pthread_mutex_lock(&params->stop_mutex);
+		if (params->stop)
+		{
+			pthread_mutex_unlock(&params->stop_mutex);
+			break ;
+		}
+		pthread_mutex_unlock(&params->stop_mutex);
 		philo_think(philo);
 	}
 	return (NULL);

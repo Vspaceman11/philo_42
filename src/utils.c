@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 17:22:29 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/09 17:54:51 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/10 15:52:20 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,4 +54,21 @@ int	ft_atol_positive(const char *str, long *out)
 		return (0);
 	*out = result;
 	return (1);
+}
+
+void	cleanup_resources(t_params *params, t_philo *philos)
+{
+	int	i;
+
+	i = 0;
+	while (i < params->n)
+	{
+		pthread_mutex_destroy(&params->forks[i]);
+		pthread_mutex_destroy(&philos[i].meal_mutex);
+		i++;
+	}
+	pthread_mutex_destroy(&params->print_mutex);
+	pthread_mutex_destroy(&params->stop_mutex);
+	free(philos);
+	free(params->forks);
 }

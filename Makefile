@@ -11,13 +11,11 @@ OBJ_DIR = obj
 INC_DIR = inc
 
 # ==== Source and Object Files ====
-SRCS = main.c \
-	   philosopher.c \
-	   utils.c \
-	   parse_args.c \
-	   init.c \
-	   actions.c \
-	   monitor.c
+SRCS =	$(SRC_DIR)/main.c \
+		$(SRC_DIR)/philo_simulation.c \
+		$(SRC_DIR)/utils.c \
+		$(SRC_DIR)/init.c \
+		$(SRC_DIR)/philo_utils.c
 OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
 
 # ==== Tools ====

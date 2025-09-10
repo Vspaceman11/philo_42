@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 17:02:46 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/10 14:18:18 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/10 15:58:04 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <pthread.h>
 # include <stdlib.h>
 # include <stdio.h>
+# include <unistd.h>
 
 typedef struct s_params
 {
@@ -25,34 +26,46 @@ typedef struct s_params
 	long			time_to_eat;
 	long			time_to_sleep;
 	long			must_eat_count;
-	struct timeval	start_time;
+	int				stop;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_mutex;
 	pthread_mutex_t	stop_mutex;
-	int				stop;
+	struct timeval	start_time;
 }	t_params;
 
 typedef struct s_philo
 {
 	int				philo_id;
 	pthread_t		thread;
-	long			last_meal_ms;
+	t_params		*params;
+	long			last_meal_time;
 	int				eat_count;
 	pthread_mutex_t	meal_mutex;
-	t_params		*params;
 }	t_philo;
 
 
 // init.c
-int	init_params(t_params *params, int argc, char **argv);
-int	init_mutexes(t_params *params);
-int	init_philo(t_philo **philos, t_params *params);
+int		init_params(t_params *params, int argc, char **argv);
+int		init_mutexes(t_params *params);
+int		init_philo(t_philo **philos, t_params *params);
 
 // utils.c
-int	ft_atol_positive(const char *str, long *out);
-int	print_error(const char *msg);
+int		ft_atol_positive(const char *str, long *out);
+int		print_error(const char *msg);
+void	cleanup_resources(t_params *params, t_philo *philos);
 
 // philo_simulation.c
-int	start_simulation(t_philo *philos, t_params *params);
+void	philo_eat(t_philo *philo);
+void	philo_sleep(t_philo *philo);
+void	philo_think(t_philo *philo);
+void	*philo_routine(void *arg);
+int		start_simulation(t_philo *philos, t_params *params);
+
+// philo_utils.c
+void	print_state(t_philo *philo, const char *state);
+long	get_timestamp_ms(t_params *params);
+void	*monitor_routine(void *arg);
+
+
 
 #endif

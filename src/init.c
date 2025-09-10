@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 17:30:36 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/10 14:16:57 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/10 15:57:09 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,20 +15,22 @@
 int	init_params(t_params *params, int argc, char **argv)
 {
 	if (argc != 5 && argc != 6)
-		return (print_error("Usage: ./philo n t_die t_eat t_sleep [must_eat]"));
+		return (print_error("Wrong number of arguments"));
 
+	params->must_eat_count = -1;
 	if (!ft_atol_positive(argv[1], &params->n))
-		return (print_error("Number of philosophers must be greater than 0"));
-	if (!ft_atol_positive(argv[2], &params->time_to_die)
-		|| !ft_atol_positive(argv[3], &params->time_to_eat)
-		|| !ft_atol_positive(argv[4], &params->time_to_sleep))
-		return (print_error("Time values must be positive integers"));
-
-	params->must_eat_count = 0;
+		return (print_error("Invalid number of philosophers"));
+	if (!ft_atol_positive(argv[2], &params->time_to_die))
+		return (print_error("Invalid time to die"));
+	if (!ft_atol_positive(argv[3], &params->time_to_eat))
+		return (print_error("Invalid time to eat"));
+	if (!ft_atol_positive(argv[4], &params->time_to_sleep))
+		return (print_error("Invalid time to sleep"));
 	if (argc == 6)
 	{
 		if (!ft_atol_positive(argv[5], &params->must_eat_count))
-			return (print_error("must_eat must be a positive integer"));
+			return (print_error("Invalid number"
+					" of times each philosopher must eat"));
 	}
 
 	params->stop = 0;
@@ -81,9 +83,9 @@ int	init_philo(t_philo **philos, t_params *params)
 	i = 0;
 	while (i < params->n)
 	{
-		(*philos)[i].philo_id = i + 1;
+		(*philos)[i].philo_id = i;
 		(*philos)[i].params = params;
-		(*philos)[i].last_meal_ms = 0;
+		(*philos)[i].last_meal_time = 0;
 		(*philos)[i].eat_count = 0;
 		if (pthread_mutex_init(&(*philos)[i].meal_mutex, NULL) != 0)
 			return (print_error("Mutex init failed for meal_mutex"));

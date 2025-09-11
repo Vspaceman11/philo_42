@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 17:02:46 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/10 15:58:04 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/11 14:59:27 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,11 +55,10 @@ int		print_error(const char *msg);
 void	cleanup_resources(t_params *params, t_philo *philos);
 
 // philo_simulation.c
-void	philo_eat(t_philo *philo);
+int		philo_eat(t_philo *philo);
 void	philo_sleep(t_philo *philo);
 void	philo_think(t_philo *philo);
 void	*philo_routine(void *arg);
-int		start_simulation(t_philo *philos, t_params *params);
 
 // philo_utils.c
 void	print_state(t_philo *philo, const char *state);

@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 13:51:41 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/11 17:38:17 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/11 17:49:19 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,70 +15,115 @@
 int	philo_eat(t_philo *philo)
 {
 	t_params *params = philo->params;
-	int	first_fork = philo->philo_id;
-	int	second_fork = (philo->philo_id + 1) % params->n;
+	int left_fork = philo->philo_id;
+	int right_fork = (philo->philo_id + 1) % params->n;
 
-	pthread_mutex_lock(&params->forks[first_fork]);
+	if (philo->philo_id % 2 == 0)
+		usleep(1000);
+
+	if (philo->philo_id % 2 == 0)
+	{
+		pthread_mutex_lock(&params->forks[right_fork]);
+		pthread_mutex_lock(&params->stop_mutex);
+		if (params->stop)
+		{
+			pthread_mutex_unlock(&params->stop_mutex);
+			pthread_mutex_unlock(&params->forks[right_fork]);
+			return (0);
+		}
+		pthread_mutex_unlock(&params->stop_mutex);
+		print_state(philo, "has taken a fork");
+
+		if (params->n == 1)
+		{
+			pthread_mutex_unlock(&params->forks[right_fork]);
+			return (0);
+		}
+
+		pthread_mutex_lock(&params->forks[left_fork]);
+		pthread_mutex_lock(&params->stop_mutex);
+		if (params->stop)
+		{
+			pthread_mutex_unlock(&params->stop_mutex);
+			pthread_mutex_unlock(&params->forks[left_fork]);
+			pthread_mutex_unlock(&params->forks[right_fork]);
+			return (0);
+		}
+		pthread_mutex_unlock(&params->stop_mutex);
+		print_state(philo, "has taken a fork");
+	}
+	else
+	{
+		pthread_mutex_lock(&params->forks[left_fork]);
+		pthread_mutex_lock(&params->stop_mutex);
+		if (params->stop)
+		{
+			pthread_mutex_unlock(&params->stop_mutex);
+			pthread_mutex_unlock(&params->forks[left_fork]);
+			return (0);
+		}
+		pthread_mutex_unlock(&params->stop_mutex);
+		print_state(philo, "has taken a fork");
+
+		if (params->n == 1)
+		{
+			pthread_mutex_unlock(&params->forks[left_fork]);
+			return (0);
+		}
+
+		pthread_mutex_lock(&params->forks[right_fork]);
+		pthread_mutex_lock(&params->stop_mutex);
+		if (params->stop)
+		{
+			pthread_mutex_unlock(&params->stop_mutex);
+			pthread_mutex_unlock(&params->forks[right_fork]);
+			pthread_mutex_unlock(&params->forks[left_fork]);
+			return (0);
+		}
+		pthread_mutex_unlock(&params->stop_mutex);
+		print_state(philo, "has taken a fork");
+	}
+
 	pthread_mutex_lock(&params->stop_mutex);
 	if (params->stop)
 	{
 		pthread_mutex_unlock(&params->stop_mutex);
-		pthread_mutex_unlock(&params->forks[first_fork]);
+		pthread_mutex_unlock(&params->forks[left_fork]);
+		pthread_mutex_unlock(&params->forks[right_fork]);
 		return (0);
 	}
 	pthread_mutex_unlock(&params->stop_mutex);
-	print_state(philo, "has taken a fork");
-	if (params->n == 1)
-	{
-		pthread_mutex_unlock(&params->forks[first_fork]);
-		return (0);
-	}
-	pthread_mutex_lock(&params->forks[second_fork]);
-	pthread_mutex_lock(&params->stop_mutex);
-	if (params->stop)
-	{
-		pthread_mutex_unlock(&params->stop_mutex);
-		pthread_mutex_unlock(&params->forks[second_fork]);
-		pthread_mutex_unlock(&params->forks[first_fork]);
-		return (0);
-	}
-	pthread_mutex_unlock(&params->stop_mutex);
-	print_state(philo, "has taken a fork");
-	pthread_mutex_lock(&params->stop_mutex);
-	if (params->stop)
-	{
-		pthread_mutex_unlock(&params->stop_mutex);
-		pthread_mutex_unlock(&params->forks[second_fork]);
-		pthread_mutex_unlock(&params->forks[first_fork]);
-		return (0);
-	}
-	pthread_mutex_unlock(&params->stop_mutex);
+
 	pthread_mutex_lock(&philo->meal_mutex);
 	philo->last_meal_time = get_timestamp_ms(params);
 	philo->eat_count++;
 	pthread_mutex_unlock(&philo->meal_mutex);
+
 	pthread_mutex_lock(&params->stop_mutex);
 	if (params->stop)
 	{
 		pthread_mutex_unlock(&params->stop_mutex);
-		pthread_mutex_unlock(&params->forks[second_fork]);
-		pthread_mutex_unlock(&params->forks[first_fork]);
+		pthread_mutex_unlock(&params->forks[left_fork]);
+		pthread_mutex_unlock(&params->forks[right_fork]);
 		return (0);
 	}
 	pthread_mutex_unlock(&params->stop_mutex);
 	print_state(philo, "is eating");
+
 	usleep(params->time_to_eat * 1000);
+
 	pthread_mutex_lock(&params->stop_mutex);
 	if (params->stop)
 	{
 		pthread_mutex_unlock(&params->stop_mutex);
-		pthread_mutex_unlock(&params->forks[second_fork]);
-		pthread_mutex_unlock(&params->forks[first_fork]);
+		pthread_mutex_unlock(&params->forks[left_fork]);
+		pthread_mutex_unlock(&params->forks[right_fork]);
 		return (0);
 	}
 	pthread_mutex_unlock(&params->stop_mutex);
-	pthread_mutex_unlock(&params->forks[second_fork]);
-	pthread_mutex_unlock(&params->forks[first_fork]);
+
+	pthread_mutex_unlock(&params->forks[left_fork]);
+	pthread_mutex_unlock(&params->forks[right_fork]);
 	return (1);
 }
 

@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 17:02:46 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/11 14:59:27 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/15 14:39:45 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,9 @@ void	*philo_routine(void *arg);
 void	print_state(t_philo *philo, const char *state);
 long	get_timestamp_ms(t_params *params);
 void	*monitor_routine(void *arg);
-
+long	get_time(void);
+int		is_dead(t_philo *philo);
+void	smart_sleep(long ms, t_philo *philo);
 
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 13:51:41 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/11 17:49:19 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/15 16:29:10 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,15 @@
 
 int	philo_eat(t_philo *philo)
 {
-	t_params *params = philo->params;
-	int left_fork = philo->philo_id;
-	int right_fork = (philo->philo_id + 1) % params->n;
+	t_params	*params;
+	int			left_fork;
+	int			right_fork;
 
+	params = philo->params;
+	left_fork = philo->philo_id;
+	right_fork = (philo->philo_id + 1) % params->n;
 	if (philo->philo_id % 2 == 0)
 		usleep(1000);
-
 	if (philo->philo_id % 2 == 0)
 	{
 		pthread_mutex_lock(&params->forks[right_fork]);
@@ -83,7 +85,6 @@ int	philo_eat(t_philo *philo)
 		pthread_mutex_unlock(&params->stop_mutex);
 		print_state(philo, "has taken a fork");
 	}
-
 	pthread_mutex_lock(&params->stop_mutex);
 	if (params->stop)
 	{
@@ -93,12 +94,10 @@ int	philo_eat(t_philo *philo)
 		return (0);
 	}
 	pthread_mutex_unlock(&params->stop_mutex);
-
 	pthread_mutex_lock(&philo->meal_mutex);
 	philo->last_meal_time = get_timestamp_ms(params);
 	philo->eat_count++;
 	pthread_mutex_unlock(&philo->meal_mutex);
-
 	pthread_mutex_lock(&params->stop_mutex);
 	if (params->stop)
 	{
@@ -109,9 +108,7 @@ int	philo_eat(t_philo *philo)
 	}
 	pthread_mutex_unlock(&params->stop_mutex);
 	print_state(philo, "is eating");
-
-	usleep(params->time_to_eat * 1000);
-
+	smart_sleep(params->time_to_eat, philo);
 	pthread_mutex_lock(&params->stop_mutex);
 	if (params->stop)
 	{
@@ -121,7 +118,6 @@ int	philo_eat(t_philo *philo)
 		return (0);
 	}
 	pthread_mutex_unlock(&params->stop_mutex);
-
 	pthread_mutex_unlock(&params->forks[left_fork]);
 	pthread_mutex_unlock(&params->forks[right_fork]);
 	return (1);
@@ -137,7 +133,7 @@ void	philo_sleep(t_philo *philo)
 	}
 	pthread_mutex_unlock(&philo->params->stop_mutex);
 	print_state(philo, "is sleeping");
-	usleep(philo->params->time_to_sleep * 1000);
+	smart_sleep(philo->params->time_to_sleep, philo);
 	pthread_mutex_lock(&philo->params->stop_mutex);
 	if (philo->params->stop)
 	{
@@ -190,7 +186,6 @@ void	*philo_routine(void *arg)
 			break ;
 		}
 		pthread_mutex_unlock(&params->stop_mutex);
-
 		if (philo_eat(philo))
 		{
 			pthread_mutex_lock(&params->stop_mutex);
@@ -211,5 +206,3 @@ void	*philo_routine(void *arg)
 	}
 	return (NULL);
 }
-
-

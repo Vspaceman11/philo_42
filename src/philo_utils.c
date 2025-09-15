@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 14:43:49 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/11 17:40:13 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/15 16:27:51 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,34 @@ long	get_timestamp_ms(t_params *params)
 	return (ms);
 }
 
+long	get_time(void)
+{
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+}
+
+int	is_dead(t_philo *philo)
+{
+	int	dead;
+
+	pthread_mutex_lock(&philo->params->stop_mutex);
+	dead = philo->params->stop;
+	pthread_mutex_unlock(&philo->params->stop_mutex);
+	return (dead);
+}
+
+void	smart_sleep(long ms, t_philo *philo)
+{
+	long	start;
+
+	start = get_time();
+
+	while (!is_dead(philo) && get_time() - start < ms)
+		usleep(500);
+}
+
 void	*monitor_routine(void *arg)
 {
 	t_philo		*philos;
@@ -59,7 +87,10 @@ void	*monitor_routine(void *arg)
 	while (1)
 	{
 		i = 0;
-		all_ate_enough = (params->must_eat_count <= 0) ? 0 : 1;
+		if (params->must_eat_count <= 0)
+			all_ate_enough = 0;
+		else
+			all_ate_enough = 1;
 		while (i < params->n)
 		{
 			current_time = get_timestamp_ms(params);

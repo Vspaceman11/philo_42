@@ -15,7 +15,8 @@ SRCS =	$(SRC_DIR)/main.c \
 		$(SRC_DIR)/philo_simulation.c \
 		$(SRC_DIR)/utils.c \
 		$(SRC_DIR)/init.c \
-		$(SRC_DIR)/philo_utils.c
+		$(SRC_DIR)/philo_utils.c \
+		$(SRC_DIR)/monitor.c
 OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
 
 # ==== Tools ====

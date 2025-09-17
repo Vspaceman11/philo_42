@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 14:43:49 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/17 11:08:27 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/17 12:11:44 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,54 +59,4 @@ void	smart_sleep(long ms, t_philo *philo)
 	start = get_time();
 	while (!is_dead(philo) && get_time() - start < ms)
 		usleep(500);
-}
-
-void	*monitor_routine(void *arg)
-{
-	t_philo		*philos;
-	t_params	*params;
-	int			i;
-	long		current_time;
-	int			all_ate_enough;
-
-	philos = (t_philo *)arg;
-	params = philos[0].params;
-	while (1)
-	{
-		if (params->must_eat_count > 0)
-			all_ate_enough = 1;
-		else
-			all_ate_enough = 0;
-		i = 0;
-		while (i < params->n)
-		{
-			pthread_mutex_lock(&philos[i].meal_mutex);
-			current_time = get_timestamp_ms(params);
-			if ((philos[i].last_meal_time == 0
-					&& current_time > params->time_to_die)
-				|| (philos[i].last_meal_time > 0
-					&& current_time - philos[i].last_meal_time > params->time_to_die))
-			{
-				print_state(&philos[i], "died");
-				pthread_mutex_lock(&params->stop_mutex);
-				params->stop = 1;
-				pthread_mutex_unlock(&params->stop_mutex);
-				pthread_mutex_unlock(&philos[i].meal_mutex);
-				return (NULL);
-			}
-			if (params->must_eat_count > 0 && philos[i].eat_count < params->must_eat_count)
-				all_ate_enough = 0;
-			pthread_mutex_unlock(&philos[i].meal_mutex);
-			i++;
-		}
-		if (params->must_eat_count > 0 && all_ate_enough)
-		{
-			pthread_mutex_lock(&params->stop_mutex);
-			params->stop = 1;
-			pthread_mutex_unlock(&params->stop_mutex);
-			return (NULL);
-		}
-		usleep(100);
-	}
-	return (NULL);
 }

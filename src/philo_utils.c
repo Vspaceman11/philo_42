@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 14:43:49 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/15 16:27:51 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/17 09:39:03 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ void	print_state(t_philo *philo, const char *state)
 	t_params	*params;
 
 	params = philo->params;
-
 	pthread_mutex_lock(&params->stop_mutex);
 	if (params->stop)
 	{
@@ -25,7 +24,6 @@ void	print_state(t_philo *philo, const char *state)
 		return ;
 	}
 	pthread_mutex_unlock(&params->stop_mutex);
-
 	pthread_mutex_lock(&params->print_mutex);
 	pthread_mutex_lock(&params->stop_mutex);
 	if (!params->stop)
@@ -69,7 +67,6 @@ void	smart_sleep(long ms, t_philo *philo)
 	long	start;
 
 	start = get_time();
-
 	while (!is_dead(philo) && get_time() - start < ms)
 		usleep(500);
 }
@@ -119,9 +116,13 @@ void	*monitor_routine(void *arg)
 			pthread_mutex_lock(&params->stop_mutex);
 			params->stop = 1;
 			pthread_mutex_unlock(&params->stop_mutex);
+			pthread_mutex_lock(&params->print_mutex);
+			printf("All philosophers have eaten at least %ld times\n",
+				params->must_eat_count);
+			pthread_mutex_unlock(&params->print_mutex);
 			return (NULL);
 		}
-		usleep(1000);
+		usleep(100);
 	}
 	return (NULL);
 }

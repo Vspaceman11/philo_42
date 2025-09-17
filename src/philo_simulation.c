@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 13:51:41 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/15 16:29:10 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/17 09:38:45 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@ int	philo_eat(t_philo *philo)
 	params = philo->params;
 	left_fork = philo->philo_id;
 	right_fork = (philo->philo_id + 1) % params->n;
-	if (philo->philo_id % 2 == 0)
-		usleep(1000);
+	// if (philo->philo_id % 2 == 0)
+	// 	usleep(1000);
 	if (philo->philo_id % 2 == 0)
 	{
 		pthread_mutex_lock(&params->forks[right_fork]);
@@ -35,13 +35,11 @@ int	philo_eat(t_philo *philo)
 		}
 		pthread_mutex_unlock(&params->stop_mutex);
 		print_state(philo, "has taken a fork");
-
 		if (params->n == 1)
 		{
 			pthread_mutex_unlock(&params->forks[right_fork]);
 			return (0);
 		}
-
 		pthread_mutex_lock(&params->forks[left_fork]);
 		pthread_mutex_lock(&params->stop_mutex);
 		if (params->stop)
@@ -66,13 +64,11 @@ int	philo_eat(t_philo *philo)
 		}
 		pthread_mutex_unlock(&params->stop_mutex);
 		print_state(philo, "has taken a fork");
-
 		if (params->n == 1)
 		{
 			pthread_mutex_unlock(&params->forks[left_fork]);
 			return (0);
 		}
-
 		pthread_mutex_lock(&params->forks[right_fork]);
 		pthread_mutex_lock(&params->stop_mutex);
 		if (params->stop)
@@ -176,7 +172,9 @@ void	*philo_routine(void *arg)
 	philo = (t_philo *)arg;
 	params = philo->params;
 	if (philo->philo_id % 2 == 0)
-		usleep(1000);
+		usleep(params->time_to_eat / 2);
+	else if (philo->philo_id % 2 != 0)
+		usleep(philo->philo_id * 300);
 	while (1)
 	{
 		pthread_mutex_lock(&params->stop_mutex);
@@ -200,9 +198,7 @@ void	*philo_routine(void *arg)
 			philo_think(philo);
 		}
 		else
-		{
 			break ;
-		}
 	}
 	return (NULL);
 }

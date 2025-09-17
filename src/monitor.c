@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 12:10:50 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/17 12:12:20 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/17 12:54:32 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,27 +37,32 @@ static void	init_all_ate_flag(t_params *params, int *all_ate_enough)
 		*all_ate_enough = 0;
 }
 
-static void	check_all_ate(t_philo *philos,
+static int	check_all_ate(t_philo *philos,
 		t_params *params, int *all_ate_enough)
 {
 	int	i;
 
+	if (params->must_eat_count <= 0)
+		return (0);
 	i = 0;
 	while (i < params->n)
 	{
-		pthread_mutex_lock(&philos[i].meal_mutex);
-		if (params->must_eat_count > 0
-			&& philos[i].eat_count < params->must_eat_count)
+		if (philos[i].eat_count < params->must_eat_count)
 			*all_ate_enough = 0;
-		pthread_mutex_unlock(&philos[i].meal_mutex);
 		i++;
 	}
-	if (params->must_eat_count > 0 && *all_ate_enough)
+	if (*all_ate_enough)
 	{
 		pthread_mutex_lock(&params->stop_mutex);
 		params->stop = 1;
 		pthread_mutex_unlock(&params->stop_mutex);
+		pthread_mutex_lock(&params->print_mutex);
+		printf("All philosophers have eaten at least %ld times\n",
+			params->must_eat_count);
+		pthread_mutex_unlock(&params->print_mutex);
+		return (1);
 	}
+	return (0);
 }
 
 void	*monitor_routine(void *arg)
@@ -83,8 +88,8 @@ void	*monitor_routine(void *arg)
 			pthread_mutex_unlock(&philos[i].meal_mutex);
 			i++;
 		}
-		check_all_ate(philos, params, &all_ate_enough);
+		if (check_all_ate(philos, params, &all_ate_enough))
+			return (NULL);
 		usleep(100);
 	}
-	return (NULL);
 }

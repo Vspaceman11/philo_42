@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 17:02:46 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/17 12:14:21 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/17 12:36:51 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,12 +43,12 @@ typedef struct s_philo
 	pthread_mutex_t	meal_mutex;
 }	t_philo;
 
-
 // init.c
 int		init_params(t_params *params, int argc, char **argv);
 int		init_mutexes(t_params *params);
 int		init_philo(t_philo **philos, t_params *params);
-
+void	init_last_meal_times(t_philo *philos, t_params *params);
+int		start_philos_threads(t_params *params, t_philo *philos);
 // utils.c
 int		ft_atol_positive(const char *str, long *out);
 int		print_error(const char *msg);

@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 17:30:36 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/11 14:48:32 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/17 12:35:54 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,46 @@ int	init_philo(t_philo **philos, t_params *params)
 		(*philos)[i].eat_count = 0;
 		if (pthread_mutex_init(&(*philos)[i].meal_mutex, NULL) != 0)
 			return (print_error("Mutex init failed for meal_mutex"));
+		i++;
+	}
+	return (0);
+}
+
+void	init_last_meal_times(t_philo *philos, t_params *params)
+{
+	int	i;
+
+	i = 0;
+	while (i < params->n)
+	{
+		pthread_mutex_lock(&philos[i].meal_mutex);
+		philos[i].last_meal_time = get_timestamp_ms(params);
+		pthread_mutex_unlock(&philos[i].meal_mutex);
+		i++;
+	}
+}
+
+int	start_philos_threads(t_params *params, t_philo *philos)
+{
+	int	i;
+
+	i = 0;
+	while (i < params->n)
+	{
+		if (pthread_create(&philos[i].thread, NULL,
+				&philo_routine, &philos[i]) != 0)
+		{
+			pthread_mutex_lock(&params->stop_mutex);
+			params->stop = 1;
+			pthread_mutex_unlock(&params->stop_mutex);
+			while (i > 0)
+			{
+				i--;
+				pthread_join(philos[i].thread, NULL);
+			}
+			cleanup_resources(params, philos);
+			return (print_error("Failed to create philosopher thread"));
+		}
 		i++;
 	}
 	return (0);

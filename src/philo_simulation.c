@@ -6,164 +6,84 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 13:51:41 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/17 09:38:45 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/17 11:08:40 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
 
-int	philo_eat(t_philo *philo)
+/* Lock two forks in correct order depending on philosopher ID */
+static int	take_forks(t_philo *philo)
 {
 	t_params	*params;
-	int			left_fork;
-	int			right_fork;
+	int			left;
+	int			right;
 
 	params = philo->params;
-	left_fork = philo->philo_id;
-	right_fork = (philo->philo_id + 1) % params->n;
-	// if (philo->philo_id % 2 == 0)
-	// 	usleep(1000);
+	left = philo->philo_id;
+	right = (philo->philo_id + 1) % params->n;
+
 	if (philo->philo_id % 2 == 0)
 	{
-		pthread_mutex_lock(&params->forks[right_fork]);
-		pthread_mutex_lock(&params->stop_mutex);
-		if (params->stop)
-		{
-			pthread_mutex_unlock(&params->stop_mutex);
-			pthread_mutex_unlock(&params->forks[right_fork]);
-			return (0);
-		}
-		pthread_mutex_unlock(&params->stop_mutex);
+		pthread_mutex_lock(&params->forks[right]);
 		print_state(philo, "has taken a fork");
 		if (params->n == 1)
 		{
-			pthread_mutex_unlock(&params->forks[right_fork]);
+			pthread_mutex_unlock(&params->forks[right]);
 			return (0);
 		}
-		pthread_mutex_lock(&params->forks[left_fork]);
-		pthread_mutex_lock(&params->stop_mutex);
-		if (params->stop)
-		{
-			pthread_mutex_unlock(&params->stop_mutex);
-			pthread_mutex_unlock(&params->forks[left_fork]);
-			pthread_mutex_unlock(&params->forks[right_fork]);
-			return (0);
-		}
-		pthread_mutex_unlock(&params->stop_mutex);
+		pthread_mutex_lock(&params->forks[left]);
 		print_state(philo, "has taken a fork");
 	}
 	else
 	{
-		pthread_mutex_lock(&params->forks[left_fork]);
-		pthread_mutex_lock(&params->stop_mutex);
-		if (params->stop)
-		{
-			pthread_mutex_unlock(&params->stop_mutex);
-			pthread_mutex_unlock(&params->forks[left_fork]);
-			return (0);
-		}
-		pthread_mutex_unlock(&params->stop_mutex);
+		pthread_mutex_lock(&params->forks[left]);
 		print_state(philo, "has taken a fork");
 		if (params->n == 1)
 		{
-			pthread_mutex_unlock(&params->forks[left_fork]);
+			pthread_mutex_unlock(&params->forks[left]);
 			return (0);
 		}
-		pthread_mutex_lock(&params->forks[right_fork]);
-		pthread_mutex_lock(&params->stop_mutex);
-		if (params->stop)
-		{
-			pthread_mutex_unlock(&params->stop_mutex);
-			pthread_mutex_unlock(&params->forks[right_fork]);
-			pthread_mutex_unlock(&params->forks[left_fork]);
-			return (0);
-		}
-		pthread_mutex_unlock(&params->stop_mutex);
+		pthread_mutex_lock(&params->forks[right]);
 		print_state(philo, "has taken a fork");
 	}
-	pthread_mutex_lock(&params->stop_mutex);
-	if (params->stop)
-	{
-		pthread_mutex_unlock(&params->stop_mutex);
-		pthread_mutex_unlock(&params->forks[left_fork]);
-		pthread_mutex_unlock(&params->forks[right_fork]);
+	return (1);
+}
+
+int	philo_eat(t_philo *philo)
+{
+	t_params	*params;
+
+	params = philo->params;
+	if (!take_forks(philo))
 		return (0);
-	}
-	pthread_mutex_unlock(&params->stop_mutex);
+
 	pthread_mutex_lock(&philo->meal_mutex);
 	philo->last_meal_time = get_timestamp_ms(params);
 	philo->eat_count++;
 	pthread_mutex_unlock(&philo->meal_mutex);
-	pthread_mutex_lock(&params->stop_mutex);
-	if (params->stop)
-	{
-		pthread_mutex_unlock(&params->stop_mutex);
-		pthread_mutex_unlock(&params->forks[left_fork]);
-		pthread_mutex_unlock(&params->forks[right_fork]);
-		return (0);
-	}
-	pthread_mutex_unlock(&params->stop_mutex);
+
 	print_state(philo, "is eating");
 	smart_sleep(params->time_to_eat, philo);
-	pthread_mutex_lock(&params->stop_mutex);
-	if (params->stop)
-	{
-		pthread_mutex_unlock(&params->stop_mutex);
-		pthread_mutex_unlock(&params->forks[left_fork]);
-		pthread_mutex_unlock(&params->forks[right_fork]);
-		return (0);
-	}
-	pthread_mutex_unlock(&params->stop_mutex);
-	pthread_mutex_unlock(&params->forks[left_fork]);
-	pthread_mutex_unlock(&params->forks[right_fork]);
+
+	pthread_mutex_unlock(&params->forks[philo->philo_id]);
+	pthread_mutex_unlock(&params->forks[(philo->philo_id + 1) % params->n]);
 	return (1);
 }
 
 void	philo_sleep(t_philo *philo)
 {
-	pthread_mutex_lock(&philo->params->stop_mutex);
-	if (philo->params->stop)
-	{
-		pthread_mutex_unlock(&philo->params->stop_mutex);
-		return ;
-	}
-	pthread_mutex_unlock(&philo->params->stop_mutex);
 	print_state(philo, "is sleeping");
 	smart_sleep(philo->params->time_to_sleep, philo);
-	pthread_mutex_lock(&philo->params->stop_mutex);
-	if (philo->params->stop)
-	{
-		pthread_mutex_unlock(&philo->params->stop_mutex);
-		return ;
-	}
-	pthread_mutex_unlock(&philo->params->stop_mutex);
 }
 
 void	philo_think(t_philo *philo)
 {
-	pthread_mutex_lock(&philo->params->stop_mutex);
-	if (philo->params->stop)
-	{
-		pthread_mutex_unlock(&philo->params->stop_mutex);
-		return ;
-	}
-	pthread_mutex_unlock(&philo->params->stop_mutex);
 	print_state(philo, "is thinking");
-	pthread_mutex_lock(&philo->params->stop_mutex);
-	if (philo->params->stop)
-	{
-		pthread_mutex_unlock(&philo->params->stop_mutex);
-		return ;
-	}
-	pthread_mutex_unlock(&philo->params->stop_mutex);
+	if (philo->params->n % 2 != 0)
+		usleep(500);
 }
 
-/**
- * @brief Thread routine for each philosopher.
- *
- * @param arg Pointer to t_philo struct.
- * @return NULL
- */
 void	*philo_routine(void *arg)
 {
 	t_philo		*philo;
@@ -171,34 +91,22 @@ void	*philo_routine(void *arg)
 
 	philo = (t_philo *)arg;
 	params = philo->params;
-	if (philo->philo_id % 2 == 0)
-		usleep(params->time_to_eat / 2);
-	else if (philo->philo_id % 2 != 0)
-		usleep(philo->philo_id * 300);
+	if (params->n % 2 == 0 && philo->philo_id % 2 == 0)
+		usleep(params->time_to_eat * 1000 / 2);
+	else if (params->n % 2 != 0 && philo->philo_id % 2 != 0)
+		usleep(500);
 	while (1)
 	{
-		pthread_mutex_lock(&params->stop_mutex);
 		if (params->stop)
-		{
-			pthread_mutex_unlock(&params->stop_mutex);
 			break ;
-		}
-		pthread_mutex_unlock(&params->stop_mutex);
-		if (philo_eat(philo))
-		{
-			pthread_mutex_lock(&params->stop_mutex);
-			if (params->stop)
-			{
-				pthread_mutex_unlock(&params->stop_mutex);
-				break ;
-			}
-			pthread_mutex_unlock(&params->stop_mutex);
-
-			philo_sleep(philo);
-			philo_think(philo);
-		}
-		else
+		if (!philo_eat(philo))
 			break ;
+		if (params->stop)
+			break ;
+		philo_sleep(philo);
+		if (params->stop)
+			break ;
+		philo_think(philo);
 	}
 	return (NULL);
 }

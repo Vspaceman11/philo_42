@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 17:30:36 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/19 13:21:26 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/19 13:33:41 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ int	init_params(t_params *params, int argc, char **argv)
 {
 	if (argc != 5 && argc != 6)
 		return (print_error("Wrong number of arguments"));
-
 	params->must_eat_count = -1;
 	if (!ft_atol_positive(argv[1], &params->n))
 		return (print_error("Invalid number of philosophers"));
@@ -44,7 +43,6 @@ int	init_params(t_params *params, int argc, char **argv)
 			return (print_error("Invalid number"
 					" of times each philosopher must eat"));
 	}
-
 	params->stop = 0;
 	gettimeofday(&params->start_time, NULL);
 	return (0);
@@ -99,7 +97,6 @@ int	init_philo(t_philo **philos, t_params *params)
 	*philos = malloc(sizeof(t_philo) * params->n);
 	if (!*philos)
 		return (print_error("Malloc failed for philosophers"));
-
 	i = 0;
 	while (i < params->n)
 	{

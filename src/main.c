@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 13:58:07 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/19 13:18:14 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/19 13:33:44 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,5 +89,3 @@ int	main(int argc, char **argv)
 		return (1);
 	return (run_simulation(&params, philos));
 }
-
-

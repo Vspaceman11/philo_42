@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 17:22:29 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/10 15:52:20 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/19 13:33:10 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,12 @@
 #include <stdio.h>
 
 /**
- * @brief Prints an error message to stderr.
+ * @brief Print an error message to stdout.
  *
- * @param msg The error message to display.
- * @return Always returns 1 (convention for error in init functions).
+ * Prints "Error: <msg>" and returns 1.
+ *
+ * @param msg Error message string.
+ * @return Always returns 1.
  */
 int	print_error(const char *msg)
 {
@@ -27,10 +29,14 @@ int	print_error(const char *msg)
 }
 
 /**
- * @brief Convert string to positive long.
+ * @brief Convert a string to a positive long integer.
  *
- * Accepts only digits (no signs, no spaces).
- * Returns 1 on success, 0 on error.
+ * Only digits are allowed. Returns 1 on success and sets *out. Returns 0
+ * if input is invalid or result is non-positive.
+ *
+ * @param str Input string to convert.
+ * @param out Pointer to store the resulting long integer.
+ * @return 1 if conversion succeeded, 0 otherwise.
  */
 int	ft_atol_positive(const char *str, long *out)
 {
@@ -56,6 +62,15 @@ int	ft_atol_positive(const char *str, long *out)
 	return (1);
 }
 
+/**
+ * @brief Frees and destroys all allocated resources of the simulation.
+ *
+ * Destroys all mutexes for forks and philosophers, frees the philosophers
+ * array and the forks array.
+ *
+ * @param params Pointer to the shared simulation parameters (t_params *).
+ * @param philos Pointer to the array of philosophers (t_philo *).
+ */
 void	cleanup_resources(t_params *params, t_philo *philos)
 {
 	int	i;

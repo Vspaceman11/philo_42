@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 14:43:49 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/19 13:31:42 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/19 14:32:16 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,5 +100,5 @@ void	smart_sleep(long ms, t_philo *philo)
 
 	start = get_time();
 	while (!is_dead(philo) && get_time() - start < ms)
-		usleep(500);
+		usleep(100);
 }

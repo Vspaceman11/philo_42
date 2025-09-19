@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 13:51:41 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/19 13:28:51 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/19 15:03:04 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,10 +122,8 @@ void	*philo_routine(void *arg)
 
 	philo = (t_philo *)arg;
 	params = philo->params;
-	if (params->n % 2 == 0 && philo->philo_id % 2 == 0)
-		usleep(params->time_to_eat * 1000 / 2);
-	else if (params->n % 2 != 0 && philo->philo_id % 2 != 0)
-		usleep(500);
+	if (philo->philo_id % 2 == 0)
+		usleep(philo->philo_id * 1000);
 	while (1)
 	{
 		if (params->stop)

@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 12:10:50 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/19 13:25:55 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/19 14:32:28 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,10 @@ static int	check_all_ate(t_philo *philos,
 	i = 0;
 	while (i < params->n)
 	{
+		pthread_mutex_lock(&philos[i].meal_mutex);
 		if (philos[i].eat_count < params->must_eat_count)
 			*all_ate_enough = 0;
+		pthread_mutex_unlock(&philos[i].meal_mutex);
 		i++;
 	}
 	if (*all_ate_enough)
@@ -133,6 +135,6 @@ void	*monitor_routine(void *arg)
 		}
 		if (check_all_ate(philos, params, &all_ate_enough))
 			return (NULL);
-		usleep(100);
+		usleep(10);
 	}
 }

@@ -6,13 +6,24 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 12:10:50 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/17 12:54:32 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/19 13:25:55 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
 
-
+/**
+ * @brief Check if a philosopher has died based on time since last meal.
+ *
+ * Compares the current time with the philosopher's last meal time and
+ * the allowed time_to_die. If the philosopher has exceeded time_to_die,
+ * sets the stop flag and returns 1. Otherwise, returns 0.
+ *
+ * @param philo Pointer to the philosopher to check.
+ * @param params Pointer to the simulation parameters.
+ * @param current_time Current timestamp in milliseconds.
+ * @return int Returns 1 if the philosopher has died, 0 otherwise.
+ */
 static int	check_philo_death(t_philo *philo,
 		t_params *params, long current_time)
 {
@@ -29,6 +40,15 @@ static int	check_philo_death(t_philo *philo,
 	return (0);
 }
 
+/**
+ * @brief Initialize the all_ate_enough flag based on must_eat_count.
+ *
+ * Sets the all_ate_enough flag to 1 if must_eat_count is positive,
+ * otherwise sets it to 0.
+ *
+ * @param params Pointer to t_params containing simulation parameters.
+ * @param all_ate_enough Pointer to an integer flag to initialize.
+ */
 static void	init_all_ate_flag(t_params *params, int *all_ate_enough)
 {
 	if (params->must_eat_count > 0)
@@ -37,6 +57,18 @@ static void	init_all_ate_flag(t_params *params, int *all_ate_enough)
 		*all_ate_enough = 0;
 }
 
+/**
+ * @brief Check if all philosophers have eaten the required number of times.
+ *
+ * Iterates through all philosophers and updates the all_ate_enough flag.
+ * If all philosophers have eaten at least must_eat_count times, sets the
+ * stop flag and prints a message.
+ *
+ * @param philos Array of t_philo structures.
+ * @param params Pointer to t_params containing simulation parameters.
+ * @param all_ate_enough Pointer to an integer flag to indicate if all ate.
+ * @return 1 if all philosophers have eaten enough, 0 otherwise.
+ */
 static int	check_all_ate(t_philo *philos,
 		t_params *params, int *all_ate_enough)
 {
@@ -65,6 +97,17 @@ static int	check_all_ate(t_philo *philos,
 	return (0);
 }
 
+/**
+ * @brief Monitor philosophers to detect death or if all have eaten enough.
+ *
+ * This function runs in a separate thread and continuously checks each
+ * philosopher's last meal time to determine if they have died. It also
+ * checks if all philosophers have eaten the required number of times and
+ * stops the simulation accordingly.
+ *
+ * @param arg Pointer to the array of t_philo structures.
+ * @return NULL always, used as thread routine.
+ */
 void	*monitor_routine(void *arg)
 {
 	t_philo		*philos;

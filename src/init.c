@@ -6,12 +6,24 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 17:30:36 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/17 12:35:54 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/19 13:21:26 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
 
+/**
+ * @brief Initialize simulation parameters from command-line arguments.
+ *
+ * Parses the number of philosophers, time to die, time to eat, time to sleep,
+ * and optional number of times each philosopher must eat. Also initializes the
+ * simulation stop flag and start time.
+ *
+ * @param params Pointer to the simulation parameters struct to initialize.
+ * @param argc Number of command-line arguments.
+ * @param argv Array of command-line argument strings.
+ * @return 0 on success, non-zero if any argument is invalid.
+ */
 int	init_params(t_params *params, int argc, char **argv)
 {
 	if (argc != 5 && argc != 6)
@@ -39,10 +51,15 @@ int	init_params(t_params *params, int argc, char **argv)
 }
 
 /**
- * @brief Initialize all mutexes in the params structure.
+ * @brief Initialize all mutexes used in the simulation.
  *
- * @param params Pointer to simulation parameters.
- * @return 0 on success, 1 on error.
+ * Allocates and initializes mutexes for forks, printing, and stopping the
+ * simulation. Each philosopher will use a fork mutex. Also initializes the
+ * print_mutex for synchronized output and stop_mutex to control simulation
+ * stopping.
+ *
+ * @param params Pointer to the simulation parameters.
+ * @return 0 on success, non-zero if memory allocation or mutex init fails.
  */
 int	init_mutexes(t_params *params)
 {
@@ -66,11 +83,14 @@ int	init_mutexes(t_params *params)
 }
 
 /**
- * @brief Initialize philosophers array.
+ * @brief Initialize philosopher structures and their meal mutexes.
  *
- * @param philos Pointer to philosopher array (will be malloc'ed here).
- * @param params Pointer to simulation parameters.
- * @return 0 on success, 1 on error.
+ * Allocates memory for all philosophers and initializes their fields:
+ * philo_id, params pointer, last_meal_time, eat_count, and meal_mutex.
+ *
+ * @param philos Pointer to the array of philosopher structures.
+ * @param params Pointer to the simulation parameters.
+ * @return 0 on success, non-zero if memory allocation or mutex init fails.
  */
 int	init_philo(t_philo **philos, t_params *params)
 {
@@ -94,6 +114,16 @@ int	init_philo(t_philo **philos, t_params *params)
 	return (0);
 }
 
+/**
+ * @brief Initialize the last meal time for all philosophers.
+ *
+ * This function sets the last_meal_time of each philosopher to the
+ * current timestamp. Each philosopher's meal_mutex is locked while
+ * updating to prevent race conditions.
+ *
+ * @param philos Array of philosopher structures.
+ * @param params Pointer to the simulation parameters.
+ */
 void	init_last_meal_times(t_philo *philos, t_params *params)
 {
 	int	i;
@@ -108,6 +138,18 @@ void	init_last_meal_times(t_philo *philos, t_params *params)
 	}
 }
 
+/**
+ * @brief Start philosopher threads and handle thread creation errors.
+ *
+ * This function creates a thread for each philosopher. If a thread
+ * cannot be created, it sets the stop flag, joins all previously
+ * created threads, cleans up resources, and prints an error message.
+ *
+ * @param params Pointer to the simulation parameters.
+ * @param philos Array of philosopher structures.
+ *
+ * @return 0 on success, or error code if thread creation failed.
+ */
 int	start_philos_threads(t_params *params, t_philo *philos)
 {
 	int	i;

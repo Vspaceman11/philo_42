@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 13:51:41 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/23 14:08:30 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/23 14:23:01 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,15 +105,15 @@ void	philo_think(t_philo *philo)
 }
 
 /**
- * @brief Routine executed by each philosopher thread.
+ * @brief Main routine for a philosopher thread.
  *
- * Determines the initial delay based on philosopher ID and total number
- * of philosophers to prevent deadlocks. Then enters a loop where the
- * philosopher eats, sleeps, and thinks until the stop flag is set or
- * eating fails.
+ * Each philosopher repeatedly performs the actions: eat, sleep, think.
+ * Even-numbered philosophers start with a slight delay to avoid collisions.
+ * The loop stops if the philosopher dies or fails to eat.
  *
- * @param arg Pointer to the philosopher structure (t_philo *).
- * @return void* Always returns NULL.
+ * @param arg Pointer to the philosopher structure (t_philo).
+ *
+ * @return Always returns NULL.
  */
 void	*philo_routine(void *arg)
 {

@@ -6,20 +6,21 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 14:43:49 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/23 14:08:08 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/23 14:26:05 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
 
 /**
- * @brief Prints the current state of a philosopher.
+ * @brief Print the current state of a philosopher.
  *
- * Locks the print_mutex to safely output the philosopher's state. Will not
- * print if the simulation has been stopped.
+ * This function locks the print_mutex to safely output the state of
+ * a philosopher, including timestamp and philosopher ID. Printing
+ * is skipped if the stop flag is set.
  *
- * @param philo Pointer to the philosopher structure (t_philo *).
- * @param state String describing the current state of the philosopher.
+ * @param philo Pointer to the philosopher structure.
+ * @param state String describing the philosopher's current action.
  */
 void	print_state(t_philo *philo, const char *state)
 {

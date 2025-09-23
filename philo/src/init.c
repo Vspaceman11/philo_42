@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 17:30:36 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/23 14:08:58 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/23 14:18:48 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,15 +49,14 @@ int	init_params(t_params *params, int argc, char **argv)
 }
 
 /**
- * @brief Initialize all mutexes used in the simulation.
+ * @brief Initialize all mutexes for forks and printing.
  *
- * Allocates and initializes mutexes for forks, printing, and stopping the
- * simulation. Each philosopher will use a fork mutex. Also initializes the
- * print_mutex for synchronized output and stop_mutex to control simulation
- * stopping.
+ * This function allocates memory for the fork mutexes and initializes
+ * them one by one. It also initializes the print_mutex used for
+ * synchronized output.
  *
- * @param params Pointer to the simulation parameters.
- * @return 0 on success, non-zero if memory allocation or mutex init fails.
+ * @param params Structure containing simulation parameters and mutexes.
+ * @return 0 on success, error code if initialization fails.
  */
 int	init_mutexes(t_params *params)
 {
@@ -134,16 +133,16 @@ void	init_last_meal_times(t_philo *philos, t_params *params)
 }
 
 /**
- * @brief Start philosopher threads and handle thread creation errors.
+ * @brief Start philosopher threads and handle creation failures.
  *
- * This function creates a thread for each philosopher. If a thread
- * cannot be created, it sets the stop flag, joins all previously
- * created threads, cleans up resources, and prints an error message.
+ * This function creates a thread for each philosopher. If creation
+ * of a thread fails, it sets the stop flag, joins all previously
+ * created threads, frees resources, and prints an error message.
  *
  * @param params Pointer to the simulation parameters.
  * @param philos Array of philosopher structures.
  *
- * @return 0 on success, or error code if thread creation failed.
+ * @return 0 on success, error code if thread creation fails.
  */
 int	start_philos_threads(t_params *params, t_philo *philos)
 {

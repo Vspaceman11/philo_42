@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 13:58:07 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/19 13:33:44 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/23 14:19:15 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
  * @param philos Array of philosopher structures.
  *
  * @return 1 if there was only one philosopher and the case was handled,
- *         0 otherwise.
+ * 			0 otherwise.
  */
 static int	handle_one_philo(t_params *params, t_philo *philos)
 {
@@ -51,7 +51,7 @@ static int	handle_one_philo(t_params *params, t_philo *philos)
  * @param philos Array of philosopher structures.
  *
  * @return 0 on success, or a non-zero error code if the monitor thread
- *         could not be created.
+ * 			could not be created.
  */
 static int	run_simulation(t_params *params, t_philo *philos)
 {

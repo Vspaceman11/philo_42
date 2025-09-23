@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 17:30:36 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/19 13:33:41 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/23 14:08:58 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,8 +75,6 @@ int	init_mutexes(t_params *params)
 	}
 	if (pthread_mutex_init(&params->print_mutex, NULL) != 0)
 		return (print_error("Mutex init failed for print_mutex"));
-	if (pthread_mutex_init(&params->stop_mutex, NULL) != 0)
-		return (print_error("Mutex init failed for stop_mutex"));
 	return (0);
 }
 
@@ -157,9 +155,9 @@ int	start_philos_threads(t_params *params, t_philo *philos)
 		if (pthread_create(&philos[i].thread, NULL,
 				&philo_routine, &philos[i]) != 0)
 		{
-			pthread_mutex_lock(&params->stop_mutex);
+			pthread_mutex_lock(&params->print_mutex);
 			params->stop = 1;
-			pthread_mutex_unlock(&params->stop_mutex);
+			pthread_mutex_unlock(&params->print_mutex);
 			while (i > 0)
 			{
 				i--;

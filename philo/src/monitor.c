@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 12:10:50 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/19 14:32:28 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/23 14:07:50 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,11 @@ static int	check_philo_death(t_philo *philo,
 		|| (philo->last_meal_time > 0
 			&& current_time - philo->last_meal_time > params->time_to_die))
 	{
-		print_state(philo, "died");
-		pthread_mutex_lock(&params->stop_mutex);
+		pthread_mutex_lock(&params->print_mutex);
 		params->stop = 1;
-		pthread_mutex_unlock(&params->stop_mutex);
+		printf("%ld %d died\n", get_timestamp_ms(params),
+			philo->philo_id + 1);
+		pthread_mutex_unlock(&params->print_mutex);
 		return (1);
 	}
 	return (0);
@@ -87,10 +88,8 @@ static int	check_all_ate(t_philo *philos,
 	}
 	if (*all_ate_enough)
 	{
-		pthread_mutex_lock(&params->stop_mutex);
-		params->stop = 1;
-		pthread_mutex_unlock(&params->stop_mutex);
 		pthread_mutex_lock(&params->print_mutex);
+		params->stop = 1;
 		printf("All philosophers have eaten at least %ld times\n",
 			params->must_eat_count);
 		pthread_mutex_unlock(&params->print_mutex);

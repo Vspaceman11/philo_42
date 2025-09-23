@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 17:22:29 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/19 13:33:10 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/23 14:08:54 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,6 @@ void	cleanup_resources(t_params *params, t_philo *philos)
 		i++;
 	}
 	pthread_mutex_destroy(&params->print_mutex);
-	pthread_mutex_destroy(&params->stop_mutex);
 	free(philos);
 	free(params->forks);
 }

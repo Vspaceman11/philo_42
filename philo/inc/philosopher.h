@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 17:02:46 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/17 12:36:51 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/23 14:09:05 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ typedef struct s_params
 	int				stop;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_mutex;
-	pthread_mutex_t	stop_mutex;
 	struct timeval	start_time;
 }	t_params;
 

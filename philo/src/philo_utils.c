@@ -6,7 +6,7 @@
 /*   By: vpushkar <vpushkar@student.42heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 14:43:49 by vpushkar          #+#    #+#             */
-/*   Updated: 2025/09/19 14:32:16 by vpushkar         ###   ########.fr       */
+/*   Updated: 2025/09/23 14:08:08 by vpushkar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,9 +78,9 @@ int	is_dead(t_philo *philo)
 {
 	int	dead;
 
-	pthread_mutex_lock(&philo->params->stop_mutex);
+	pthread_mutex_lock(&philo->params->print_mutex);
 	dead = philo->params->stop;
-	pthread_mutex_unlock(&philo->params->stop_mutex);
+	pthread_mutex_unlock(&philo->params->print_mutex);
 	return (dead);
 }
 
